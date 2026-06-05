@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hávamál Diario</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#8d6b2f">
+<style>
+body{
+margin:0;
+font-family:serif;
+background:#111 url('./assets/bg.jpg') center/cover fixed;
+color:#f0e6c8;
+display:flex;
+justify-content:center;
+align-items:center;
+min-height:100vh;
+}
+.overlay{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,0.6);
+}
+.card{
+position:relative;
+z-index:2;
+max-width:700px;
+margin:20px;
+padding:30px;
+background:rgba(20,15,10,0.88);
+border:2px solid #8d6b2f;
+border-radius:18px;
+text-align:center;
+}
+button{
+padding:12px 20px;
+border:none;
+border-radius:10px;
+background:#8d6b2f;
+color:white;
+margin:5px;
+}
+.stanza{
+font-size:1.3em;
+line-height:1.7;
+margin:20px 0;
+}
+</style>
+</head>
+<body>
+<div class="overlay"></div>
+<div class="card">
+<h1>ᚢ ᛚ ᚠ<br>Hávamál Diario</h1>
+<div id="verse"></div>
+<div class="stanza" id="text"></div>
+<button onclick="randomVerse()">Otra estrofa</button>
+<button onclick="speakVerse()">Escuchar</button>
+</div>
+
+<script>
+const verses=[
+{n:1,t:"Antes de entrar, mira alrededor; nunca sabes dónde puede haber enemigos sentados."},
+{n:15,t:"El silencioso y prudente llega a las granjas; raramente el hablador encuentra sabiduría."},
+{n:77,t:"Mueren el ganado y los parientes, y también tú morirás; pero la fama nunca muere."},
+{n:127,t:"Si sabes de un amigo fiel, visítalo con frecuencia; el camino se cubre de hierba si nadie pasa."}
+];
+
+let current=0;
+
+function showVerse(i){
+current=i;
+document.getElementById("verse").innerHTML="<h3>Estrofa "+verses[i].n+"</h3>";
+document.getElementById("text").innerText=verses[i].t;
+}
+
+function randomVerse(){
+showVerse(Math.floor(Math.random()*verses.length));
+}
+
+function speakVerse(){
+let msg=new SpeechSynthesisUtterance(verses[current].t);
+msg.lang="es-ES";
+speechSynthesis.speak(msg);
+}
+
+function daily(){
+const d=new Date();
+const day=Math.floor((d-new Date(d.getFullYear(),0,0))/86400000);
+showVerse(day%verses.length);
+}
+
+daily();
+
+if('serviceWorker' in navigator){
+navigator.serviceWorker.register('./service-worker.js');
+}
+</script>
+</body>
+</html>
